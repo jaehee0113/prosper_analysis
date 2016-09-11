@@ -150,7 +150,8 @@ By analyzing how many investors each loan entry attracts, we might be able to se
 render_graph(pd, 'The number of investors for each loan entry', 'Investors') +
   geom_bar(fill = "dodgerblue", colour = "gray48") +
   xlim(c(0, 300)) + 
-  labs(x = 'The number of investors', y = 'Frequency')
+  labs(x = 'The number of investors', y = 'Frequency (log10)') +
+  scale_y_log10()
 
 #zooming_in
 
@@ -162,8 +163,9 @@ render_graph(pd, '', 'Investors') +
 
 ggplot(pd, aes((InvestmentFromFriendsCount / Investors))) +
   geom_bar(fill = "dodgerblue", colour = "gray48") +
-  labs(x = 'Friends and Investors Ratio', y = 'Frequency') +
-  ggtitle('Frequency of the friend to investors ratio')
+  labs(x = 'Friends and Investors Ratio', y = 'Frequency (log10)') +
+  ggtitle('Frequency of the friend to investors ratio') +
+  scale_y_log10()
   
 ```
 
@@ -186,10 +188,11 @@ rendered_map <- render_data_map(us, parsed_data)
 br_state_dist = ggplot(aes(BorrowerState), 
        data = subset(pd, BorrowerState != '')) +
   geom_bar(na.rm = TRUE, fill = "dodgerblue", color = "gray48") +
-  geom_hline(yintercept = mean(pd.pd_by_states$n), alpha =  0.3, linetype = 2, size = 1, color = I('red')) +
+  geom_hline(yintercept = mean(pd.pd_by_states$n), 
+             alpha =  0.3, linetype = 2, size = 1, color = I('red')) +
   geom_text(data = data.frame(x = 50,y = mean(pd.pd_by_states$n)), 
             aes(x, y), label= "average", vjust = -1, size = 4, colour = "red") +
-  theme_classic(18)+
+  theme_classic(18) +
   theme( panel.grid.major = element_line(colour = "grey80"),
          panel.grid.major.x = element_blank(),
          panel.grid.minor = element_blank(),
@@ -200,20 +203,22 @@ br_state_dist = ggplot(aes(BorrowerState),
 grid.arrange(rendered_map, br_state_dist, ncol = 1)
 ```
 
-We can see that most loan borrowers are heavily concentrated in California. This is a surprising result because relatively rural states tend to have less borrowers registered for this platform. However, we cannot draw any causation because it may just be the case that people in rural areas do not know about this P2P lending system and also there is a possibility that people from California use this P2P system as they have high digital literacy.
+We can see that most loan borrowers are heavily concentrated in California. While the average is below 5000, the number of borrowers in California reaches almost 15000. This is a surprising result because relatively rural states tend to have less borrowers registered for this platform. However, we cannot draw any causation because it may just be the case that people in rural areas do not know about this P2P lending system and also there is a possibility that people from California use this P2P system as they have high digital literacy.
 
 Now, I would like to get some details from users to decide whether to use the platform or not.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, house_own}
-render_graph(pd,'Frequency of borrower being a home owner', 'IsBorrowerHomeowner') +
+render_graph(pd,'Frequency of borrower being a home owner', 
+             'IsBorrowerHomeowner') +
   get_correct_geom('bar') +
   labs(x = 'Home Owner', y = 'Frequency')
 ```
 
-We can see that the fact that you are a home owner has no correlation with becoming a borrower.
+We can see that the number of borrowers who are home owners is almost the same as the number of borrows who does not own a home.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, income_dist, fig.width = 12}
-render_graph(pd,'Distribution of borrowers` income range','IncomeRange') +
+render_graph(pd,'Distribution of borrowers` income range',
+             'IncomeRange') +
   get_correct_geom('bar') +
   labs(x = 'Income Range', y = 'Frequency')
 ```
@@ -226,7 +231,8 @@ listing_categories <- group_by(pd, ListingCategory..numeric.)
 pd.pd_by_listing_categories <- summarise(listing_categories,
           n = n())
 
-render_graph(pd.pd_by_listing_categories,'Distribution of listings by category','ListingCategory..numeric.', 'n') +
+render_graph(pd.pd_by_listing_categories,'Distribution of listings by category'
+             ,'ListingCategory..numeric.', 'n') +
   geom_point() +
   scale_x_continuous(limits = c(0, 20), breaks = seq(0, 20, 1)) +
   labs(x = 'Listing Category', y = 'Frequency')
@@ -267,6 +273,69 @@ ggplot(aes(CurrentDelinquencies),
   labs(x = 'The number of delinquent accounts', y = 'Frequency')
 ```
 
+```{r echo=FALSE, message=FALSE, warning=FALSE, loanStatus, fig.width = 16}
+ggplot(aes(LoanStatus), 
+       data = pd) +
+  geom_bar(na.rm = TRUE, fill = "dodgerblue", color = 'gray48') +
+  ggtitle('Distribution of loan status') +
+  labs(x = 'Loan Status', y = 'Frequency (log10)') +
+  scale_y_log10()
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, percentFunded}
+ggplot(aes(PercentFunded), 
+       data = pd) +
+  geom_bar(na.rm = TRUE, fill = "dodgerblue", color = 'gray48') +
+  ggtitle('Distribution of percent funded') +
+  labs(x = 'Percent Funded', y = 'Frequency (log10)') +
+  scale_y_log10()
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, InvestmentFromFriendsCount}
+ggplot(aes(InvestmentFromFriendsCount), 
+       data = pd) +
+  geom_bar(na.rm = TRUE, fill = "dodgerblue", color = 'gray48') +
+  ggtitle('Distribution of loan status') +
+  labs(x = '# of investments from friends', y = 'Frequency (log10)') +
+  scale_y_log10()
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, Investors}
+ggplot(aes(Investors), 
+       data = pd) +
+  geom_bar(na.rm = TRUE, fill = "dodgerblue", color = 'gray48') +
+  ggtitle('Distribution of loan status') +
+  labs(x = '# of investments', y = 'Frequency (log10)') +
+  scale_y_log10()
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, EstimatedLoss}
+ggplot(aes(EstimatedLoss), 
+       data = pd) +
+  geom_bar(na.rm = TRUE, fill = "dodgerblue", color = 'gray48') +
+  ggtitle('Distribution of loan status') +
+  labs(x = 'estimated loss', y = 'Frequency (log10)') +
+  scale_y_log10()
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, EstimatedEffectiveYield}
+ggplot(aes(EstimatedEffectiveYield), 
+       data = pd) +
+  geom_bar(na.rm = TRUE, fill = "dodgerblue", color = 'gray48') +
+  ggtitle('Distribution of loan status') +
+  labs(x = 'estimated yield', y = 'Frequency (log10)') +
+  scale_y_log10()
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, EstimatedReturn}
+ggplot(aes(EstimatedReturn), 
+       data = pd) +
+  geom_bar(na.rm = TRUE, fill = "dodgerblue", color = 'gray48') +
+  ggtitle('Distribution of loan status') +
+  labs(x = 'estimated return', y = 'Frequency (log10)') +
+  scale_y_log10()
+```
+
 Most users have 0 accounts with deliquency. Up until now, the general profile of users indicates that I may be suitable for using this system.
 
 ## Bivariate Analysis
@@ -276,49 +345,30 @@ To analyze deeper, I wanted to see if I use this system, whether my employment s
 My speculation is that those who are not employed tend to have high estimated loss, low estimated yield and low estimated return.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, loss_status}
-
-group_loss <- pd %>%
-  group_by(EmploymentStatus) %>%
-  summarise_each(funs(mean(., na.rm = TRUE)), EstimatedLoss)
-
-group_loss_plot <- ggplot(subset(group_loss, EstimatedLoss != 'NaN')) +
-  geom_bar(aes(x = EmploymentStatus, y = EstimatedLoss),
-           stat = "identity",
-           na.rm = TRUE,
-           fill = "dodgerblue",
-           color = 'gray48') +
+group_loss_plot <- ggplot(aes(x=factor(EmploymentStatus), 
+           y= EstimatedLoss), 
+        data = subset(pd, EstimatedLoss != 'NaN')) +
+  geom_boxplot( alpha = .5) +
   ggtitle('Estimated loss rate mean for each employment status') +
   labs(y = 'Estimated Loss Rate', x = '')
 ```
 
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE, return_status}
-group_return <- pd %>%
-  group_by(EmploymentStatus) %>%
-  summarise_each(funs(mean(., na.rm = TRUE)), EstimatedReturn)
-
-group_return_plot <- ggplot(subset(group_return, EstimatedReturn != 'NaN')) +
-  geom_bar(aes(x = EmploymentStatus, y = EstimatedReturn),
-           stat = "identity",
-           na.rm = TRUE,
-           fill = "dodgerblue",
-           color = 'gray48') +
+group_return_plot <- ggplot(aes(x=factor(EmploymentStatus), 
+           y= EstimatedReturn), 
+        data = subset(pd, EstimatedReturn != 'NaN')) +
+  geom_boxplot( alpha = .5) +
   ggtitle('Estimated return rate mean for each employment status') +
   labs(y = 'Estimated Return Rate', x = 'Employment Status')
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE,emp_status}
-group_yield <- pd %>%
-  group_by(EmploymentStatus) %>%
-  summarise_each(funs(mean(., na.rm = TRUE)), EstimatedEffectiveYield)
+```{r echo=FALSE, message=FALSE, warning=FALSE, yield_status, fig.height = 12}
 
-group_yield_plot <- ggplot(subset(group_yield, EstimatedEffectiveYield != 'NaN')) +
-  geom_bar(aes(x = EmploymentStatus, y = EstimatedEffectiveYield),
-           stat = "identity",
-           na.rm = TRUE,
-           fill = "dodgerblue",
-           color = 'gray48') +
-  ggtitle('Estimated effective yield rate mean for each employment status') +
+group_yield_plot <- ggplot(aes(x=factor(EmploymentStatus), 
+           y= EstimatedEffectiveYield), 
+        data = subset(pd, EstimatedEffectiveYield != 'NaN')) +
+  geom_boxplot( alpha = .5) +
+  ggtitle('Estimated Yield rate mean for each employment status') +
   labs(y = 'Estimated Yield Rate', x = '')
 
 grid.arrange(group_loss_plot, group_yield_plot, group_return_plot, ncol = 1)
@@ -383,8 +433,11 @@ group_funded <- pd %>%
   group_by(Occupation) %>%
   summarise_each(funs(mean(., na.rm = TRUE)), PercentFunded)
 
+white_collar_jobs <- c('Computer Programmer', 'Analyst', 'Executive', 
+                       'Attorney', 'Doctor', 'Judge', 'Professor')
+
 ggplot(subset(group_funded, 
-                     (Occupation %in% c('Computer Programmer', 'Analyst', 'Executive', 'Attorney', 'Doctor', 'Judge', 'Professor')))) +
+                     (Occupation %in% white_collar_jobs))) +
   geom_bar(aes(x = Occupation, y = PercentFunded),
            stat = "identity",
            na.rm = TRUE,
@@ -396,9 +449,9 @@ ggplot(subset(group_funded,
 
 Unfortunately, the number of accounts delinquent at the time the credit profile was pulled has no correlation with the loan status.
 
-### Multivariate Analysis (Final Plots)
+### Multivariate Analysis
 
-As a summary plot, we have seen how income range is correlated with the probability of one borrowing money using this platform. Therefore, it would be good to know: for each income range, how loan status and employment status are related together (interrelationship among the variables). I discarded 'Not displayed' and 'Not employed' in the facetting process because they are redundant for our purpose. Although $0 may be data to be cleaned, I included it in because it may reveal some useful insight to our analysis. These are the final plots and summarize my findings (the most important findings are sort of merged in this multivariate analysis.)
+We have seen how income range is correlated with the probability of one borrowing money using this platform. Therefore, it would be good to know: for each income range, how loan status and employment status are related together (interrelationship among the variables). I discarded 'Not displayed' and 'Not employed' in the facetting process because they are redundant for our purpose. Although $0 may be data to be cleaned, I included it in because it may reveal some useful insight to our analysis.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, by_inc_range, fig.width = 12}
 ggplot(data = subset(pd, 
@@ -406,22 +459,24 @@ ggplot(data = subset(pd,
                      (LoanStatus %in% c('Chargedoff', 'Completed', 'Defaulted'))& 
                        !(EmploymentStatus %in% c('Not available', 'Other', 'Employed', ''))), 
        aes(LoanStatus, fill = EmploymentStatus )) +
-  geom_bar(position="dodge") +
+  geom_bar(position = "dodge") +
   facet_wrap(~IncomeRange, ncol = 2) + 
   ggtitle('Relationship between loan status and employment status by income range') +
-  labs(x = 'Loan Status', y = 'Frequency')
+  labs(x = 'Loan Status', y = 'Frequency (log10)') +
+  scale_y_log10()
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, by_occ_white, fig.width = 12}
 ggplot(data = subset(pd, 
-                     (Occupation %in% c('Computer Programmer', 'Analyst', 'Executive', 'Attorney', 'Doctor', 'Judge', 'Professor')) &
+                     (Occupation %in% white_collar_jobs) &
                      (LoanStatus %in% c('Chargedoff', 'Completed', 'Defaulted')) & 
                        !(IncomeRange %in% c('Not displayed', 'Not employed'))), 
        aes(LoanStatus, fill = IncomeRange )) +
-  geom_bar(position="dodge") +
+  geom_bar(position = "dodge") +
   facet_wrap(~Occupation, ncol = 2) +
   ggtitle('Relationship between loan status and income range by major white collar occupations') +
-  labs(x = 'Loan Status', y = 'Frequency')
+  labs(x = 'Loan Status', y = 'Frequency (log10)') +
+  scale_y_log10()
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, by_occ_blue, fig.width = 12}
@@ -433,12 +488,68 @@ ggplot(data = subset(pd,
   geom_bar(position="dodge") +
   facet_wrap(~Occupation, ncol = 2) +
   ggtitle('Relationship between loan status and income range by major blue collar occupations') +
-  labs(x = 'Loan Status', y = 'Frequency')
+  labs(x = 'Loan Status', y = 'Frequency (log10)') +
+  scale_y_log10()
 ```
 
-### Final Summary
+As these three plots suggest, regardless of one’s employment status and income range, most users were able to use the system without trouble as their loan status is ‘completed.’ Most users are, in fact, employed and amongst employed people, the white collar occupation does not have loan status problem (things do not really differ in terms of income range). However, for blue collar occupations like car dealer, depending on income range, it might tell us that his or her loan status may not be completed. However, as my future occupation is highly likely to fall under white collar occupations, these factors suggest to me that I should use Prosper system when needed because people in similar situation as me use the system generally without trouble.
 
-As the final three plots suggest, regardless of one’s employment status and income range, most users were able to use the system without trouble as their loan status is ‘completed.’ Most users are, in fact, employed and amongst employed people, the white collar occupation does not have loan status problem (things do not really differ in terms of income range). However, for blue collar occupations like car dealer, depending on income range, it might tell us that his or her loan status may not be completed. However, as my future occupation is highly likely to fall under white collar occupations, these factors suggest to me that I should use Prosper system when needed because people in similar situation as me use the system generally without trouble. 
+```{r echo=FALSE, message=FALSE, warning=FALSE, rating_loan_amt_length, fig.width = 12}
+ggplot(aes(x=factor(ProsperRating..Alpha.), 
+           y= LoanOriginalAmount,Term, fill = factor(Term)), 
+        data = subset(pd, (ProsperRating..Alpha. != ''))) +
+  geom_boxplot( alpha = .5) +
+  ggtitle('Relationship between propser rating and loan amount and length') +
+  labs(x = 'Propser Rating', y = 'Loan Amount', fill = "Loan length (months)")
+```
+
+For good prosper ratings, loan amount and legnth do not differ. If compared with poor prosper rating, the average loan amount is significantly lower than that of entries with good ratings. 
+
+
+### Final Plots and Summary
+
+The final three plots effectively summarize what I have explored so far. I would like to summarize my finding in the following three main aspects 1) Demographic aspect 2) Loan Status / Employment Status (income range) 3) Occupation (If employed) / Loan Status (income range). 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, map_dist_final, fig.width=16, fig.height=16}
+
+grid.arrange(rendered_map, br_state_dist, ncol = 1)
+
+```
+
+I chose this plot as my final plot because this directly shows the general socioeconomic status of borrowers by looking at where most borrowers live. I live in Sydney and Sydney has similar average income compared to that of California. This was very important factor for my decision to consider the system.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, by_inc_range_final, fig.width = 12}
+ggplot(data = subset(pd, 
+                     !(IncomeRange %in% c('Not displayed', 'Not employed')) &
+                     (LoanStatus %in% c('Chargedoff', 'Completed', 'Defaulted'))& 
+                       !(EmploymentStatus %in% c('Not available', 'Other', 'Employed', ''))), 
+       aes(LoanStatus, fill = EmploymentStatus )) +
+  geom_bar(position = "dodge") +
+  facet_wrap(~IncomeRange, ncol = 2) + 
+  ggtitle('Relationship between loan status and employment status by income range') +
+  labs(x = 'Loan Status', y = 'Frequency (log10)') +
+  scale_y_log10()
+```
+
+Another good determinant was income range and employment status of borrowers. In my case, it is very important that my loan status be completed. Regardless of income range and employment status, the loan status of borrowers is usually 'completed.' Furthermore, the borrowers who are employed full-time are mostly using the platform. Compared to my profile, I am full-time worker having average income. Many borrowers are like me.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, by_occ_white_final, fig.width = 12}
+ggplot(data = subset(pd, 
+                     (Occupation %in% white_collar_jobs) &
+                     (LoanStatus %in% c('Chargedoff', 'Completed', 'Defaulted')) & 
+                       !(IncomeRange %in% c('Not displayed', 'Not employed'))), 
+       aes(LoanStatus, fill = IncomeRange )) +
+  geom_bar(position = "dodge") +
+  facet_wrap(~Occupation, ncol = 2) +
+  ggtitle('Relationship between loan status and income range by major white collar occupations') +
+  labs(x = 'Loan Status', y = 'Frequency (log10)') +
+  scale_y_log10()
+```
+
+Final main determinant is occupation (if employed). Occupation might tell us that for borrowers with some occupations, using this platform not be the good choice. I chose eight occupations because these occupations are my possible occupations in future. Judge has no data. However, for other occupations, in most cases, their loan status is 'completed.' This is another good sign that I can use this platform.
+
+Since I have three ticks, I decided to use Prosper P2P platform when needed.
 
 ### Reflection
 
