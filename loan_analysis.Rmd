@@ -516,7 +516,12 @@ grid.arrange(rendered_map, br_state_dist, ncol = 1)
 
 ```
 
-I chose this plot as my final plot because this directly shows the general socioeconomic status of borrowers by looking at where most borrowers live. I live in Sydney and Sydney has similar average income compared to that of California. This was very important factor for my decision to consider the system.
+```{r echo=TRUE, message=FALSE, warning=FALSE, demo_stat}
+#Total number of borrowers
+nrow(pd)
+```
+
+I chose this plot as my final plot because this directly shows the general socioeconomic status of borrowers by looking at where most borrowers live. I live in Sydney and Sydney has similar average income compared to that of California (i.e. by looking at its GDP per capita). When looking at this statistics, California has almost 15,000 borrowers, which is about 10% of total borrowers. The average borrowers of US states are about 2500. For other states, New York and Texas had relatively large number of borrowers as well, indicating that states with comparatively high GDP per capita usually have high number of users. We can see that This was very important factor for my decision to consider the system. In terms of demographic, the data indicates that I should be able to use this system.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, by_inc_range_final, fig.width = 12}
 ggplot(data = subset(pd, 
@@ -531,7 +536,7 @@ ggplot(data = subset(pd,
   scale_y_log10()
 ```
 
-Another good determinant was income range and employment status of borrowers. In my case, it is very important that my loan status be completed. Regardless of income range and employment status, the loan status of borrowers is usually 'completed.' Furthermore, the borrowers who are employed full-time are mostly using the platform. Compared to my profile, I am full-time worker having average income. Many borrowers are like me.
+Another good determinant was income range and employment status of borrowers. In my case, it is very important that my loan status be completed. Regardless of income range and employment status, the loan status of borrowers is usually 'completed.' Furthermore, the borrowers who are employed full-time are mostly using the platform. One interesting observation is that borrowers who make more than 50K per annum are never unemployed (and they could earn up to $25,000 ~ $49,999 range). Compared to my profile, I am full-time worker having average income. As many users are in a similar situation, this data also indicates that I can use the system. 
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, by_occ_white_final, fig.width = 12}
@@ -547,10 +552,10 @@ ggplot(data = subset(pd,
   scale_y_log10()
 ```
 
-Final main determinant is occupation (if employed). Occupation might tell us that for borrowers with some occupations, using this platform not be the good choice. I chose eight occupations because these occupations are my possible occupations in future. Judge has no data. However, for other occupations, in most cases, their loan status is 'completed.' This is another good sign that I can use this platform.
+Final main determinant is occupation (if employed). Occupation might tell us that for borrowers with some occupations, using this platform not be the good choice. I chose eight occupations because these occupations are my possible occupations in future. 'Judge' occupation has no data. However, for other occupations, in most cases, their loan status is 'completed.' One interesting observation is that most occupations listed in this plot follows the similar pattern. This is another good sign that I can use this platform.
 
 Since I have three ticks, I decided to use Prosper P2P platform when needed.
 
 ### Reflection
 
-The fundamental difficult aspect of the analysis was the nature of dataset. I have never encountered the concept of P2P-based financial platform so it took a lot of time to understand the dataset. Furthermore, the dataset contains many attributes and it was difficult to understand every attribute as the description of each attribute lacked details. However, as there were too many attributes to consider, I was not able to use every attribute so in the future, I would like to draw more interesting information from the dataset. I am sure there are more to be discovered. 
+The fundamental difficult aspect of the analysis was the nature of dataset. I have never encountered the concept of P2P-based financial platform so it took a lot of time to understand the dataset. To deal with this, I went to Prosper website and learned about some financial concepts like delinquencies. Furthermore, the dataset contains many attributes and it was difficult to understand every attribute as the description of each attribute lacked details. However, as there were too many attributes to consider, I was not able to use every attribute so in the future, I would like to draw more interesting information from the dataset. I am sure there are more to be discovered. For instance, I can look at past data such as Trades Opened in the last 6 months and decide whether to use this platform or not. Considering more variables would strengthen the accuracy of my decision.
